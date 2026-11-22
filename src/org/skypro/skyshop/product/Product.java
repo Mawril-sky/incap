@@ -1,11 +1,9 @@
 package org.skypro.skyshop.product;
 
-public class Product {
-    private String name;
-    private int price;
+public abstract class Product {
+    private final String name;
 
-    public Product(String name, int price) {
-        this.price = price;
+    public Product(String name) {
         this.name = name;
     }
 
@@ -13,10 +11,17 @@ public class Product {
         return name;
     }
 
-    public int getPrice() {
-        return price;
+    // Цены у базового класса больше нет — метод абстрактный,
+    // каждый тип товара возвращает свою цену по-своему.
+    public abstract int getPrice();
+
+    // Специальный ли товар. Базовая реализация — false,
+    // классы со скидкой и с фиксированной ценой переопределят её на true.
+    public boolean isSpecial() {
+        return false;
     }
 
-        }
-
-
+    // Каждый класс товара переопределит этот метод под свой формат вывода.
+    @Override
+    public abstract String toString();
+}
