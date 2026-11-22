@@ -3,13 +3,12 @@ package org.skypro.skyshop.basket;
 import org.skypro.skyshop.product.Product;
 
 public class ProductBasket {
-    private final Product[] products; // приватный массив — прямой доступ извне невозможен
+    private final Product[] products;
     private int size;
 
     public ProductBasket() {
-         // массив из пяти элементов
-        this.size = 0;
         this.products = new Product[5];
+        this.size = 0;
     }
 
     public void addProduct(Product product) {
@@ -17,16 +16,13 @@ public class ProductBasket {
             return;
         }
         if (size == products.length) {
-            System.out.println("В корзине нет свободного места");
+            System.out.println("Невозможно добавить продукт");
             return;
         }
         products[size] = product;
         size++;
     }
 
-    /**
-     * Возвращает общую стоимость корзины.
-     */
     public int getTotalCost() {
         int total = 0;
         for (int i = 0; i < size; i++) {
@@ -35,24 +31,23 @@ public class ProductBasket {
         return total;
     }
 
-    /**
-     * Печатает содержимое корзины.
-     * Если корзина пуста — печатает «в корзине пусто».
-     */
     public void printBasket() {
         if (size == 0) {
             System.out.println("в корзине пусто");
             return;
         }
+        int specialCount = 0;
         for (int i = 0; i < size; i++) {
-            System.out.println(products[i].getName() + ": " + products[i].getPrice());
+            Product product = products[i];
+            System.out.println(product);
+            if (product.isSpecial()) {
+                specialCount++;
+            }
         }
         System.out.println("Итого: " + getTotalCost());
+        System.out.println("Специальных товаров: " + specialCount);
     }
 
-    /**
-     * Проверяет, есть ли продукт с указанным именем в корзине.
-     */
     public boolean containsProductByName(String name) {
         for (int i = 0; i < size; i++) {
             if (products[i].getName().equals(name)) {
@@ -62,9 +57,6 @@ public class ProductBasket {
         return false;
     }
 
-    /**
-     * Очищает корзину, проставляя всем элементам массива null.
-     */
     public void clearBasket() {
         for (int i = 0; i < products.length; i++) {
             products[i] = null;
