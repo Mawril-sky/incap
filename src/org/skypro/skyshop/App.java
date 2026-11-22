@@ -1,61 +1,71 @@
 package org.skypro.skyshop;
 
+import org.skypro.skyshop.article.Article;
 import org.skypro.skyshop.basket.ProductBasket;
+import org.skypro.skyshop.product.DiscountedProduct;
+import org.skypro.skyshop.product.FixPriceProduct;
 import org.skypro.skyshop.product.Product;
+import org.skypro.skyshop.product.SimpleProduct;
+import org.skypro.skyshop.search.SearchEngine;
+import org.skypro.skyshop.search.Searchable;
 
 public class App {
     public static void main(String[] args) {
-        // 1. Добавление продуктов в корзину
+        // Товары для демонстрации корзины
+        Product apple = new SimpleProduct("Яблоко", 50);
+        Product laptop = new DiscountedProduct("Ноутбук", 1000, 20);
+        Product paperclip = new FixPriceProduct("Скрепка");
+
         ProductBasket basket = new ProductBasket();
-        basket.addProduct(new Product("Яблоко", 50));
-        basket.addProduct(new Product("Хлеб", 80));
-        basket.addProduct(new Product("Молоко", 90));
-
-        // 2. Добавление продукта в заполненную корзину
-        // Создаём вторую корзину и заполняем её до отказа
-        ProductBasket fullBasket = new ProductBasket();
-        fullBasket.addProduct(new Product("Сыр", 300));
-        fullBasket.addProduct(new Product("Чай", 150));
-        fullBasket.addProduct(new Product("Кофе", 400));
-        fullBasket.addProduct(new Product("Сахар", 60));
-        fullBasket.addProduct(new Product("Масло", 120));
-        fullBasket.addProduct(new Product("Крупа", 70));
-        // Вывод: Невозможно добавить продукт
-
-        // 3. Печать содержимого корзины с несколькими товарами
-        System.out.println("Содержимое первой корзины:");
+        basket.addProduct(apple);
+        basket.addProduct(laptop);
+        basket.addProduct(paperclip);
         basket.printBasket();
+
+        // Статьи
+        Article appleArticle = new Article(
+                "Польза яблок",
+                "Яблоко — один из самых полезных фруктов. В нём много витаминов и клетчатки."
+        );
+        Article laptopArticle = new Article(
+                "Как выбрать ноутбук",
+                "Ноутбук стоит выбирать по процессору, объёму памяти и весу."
+        );
+        Article gardenArticle = new Article(
+                "Садовые хитрости",
+                "Скрепка отлично подходит для подвязки рассады к опоре."
+        );
+
+        // Движок поиска: добавляем все товары и статьи
+        SearchEngine engine = new SearchEngine(10);
+        engine.add(apple);
+        engine.add(laptop);
+        engine.add(paperclip);
+        engine.add(appleArticle);
+        engine.add(laptopArticle);
+        engine.add(gardenArticle);
+
+        // Несколько поисковых запросов
         System.out.println();
+        printResults(engine, "яблоко");
+        printResults(engine, "ноутбук");
+        printResults(engine, "скрепка");
+        printResults(engine, "ананас");
+    }
 
-        // 4. Получение стоимости корзины с несколькими товарами
-        System.out.println("Стоимость корзины: " + basket.getTotalCost());
+    private static void printResults(SearchEngine engine, String query) {
+        System.out.println("Поиск: \"" + query + "\"");
+        Searchable[] results = engine.search(query);
+        boolean found = false;
+        for (Searchable result : results) {
+            if (result != null) {
+                System.out.println("  " + result.getStringRepresentation());
+                found = true;
+            }
+        }
+        if (!found) {
+            System.out.println("  Ничего не найдено");
+        }
         System.out.println();
-
-        // 5. Поиск товара, который есть в корзине
-        System.out.println("Есть ли \"Хлеб\" в корзине? " + basket.containsProductByName("Хлеб"));
-        // true
-
-        // 6. Поиск товара, которого нет в корзине
-        System.out.println("Есть ли \"Ананас\" в корзине? " + basket.containsProductByName("Ананас"));
-        // false
-        System.out.println();
-
-        // 7. Очистка корзины
-        basket.clearBasket();
-
-        // 8. Печать содержимого пустой корзины
-        System.out.println("Содержимое корзины после очистки:");
-        basket.printBasket();
-        // в корзине пусто
-        System.out.println();
-
-        // 9. Получение стоимости пустой корзины
-        System.out.println("Стоимость пустой корзины: " + basket.getTotalCost());
-        // 0
-        System.out.println();
-
-        // 10. Поиск товара по имени в пустой корзине
-        System.out.println("Есть ли \"Молоко\" в пустой корзине? " + basket.containsProductByName("Молоко"));
-        // false
     }
 }
