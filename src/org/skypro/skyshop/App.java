@@ -1,39 +1,71 @@
 package org.skypro.skyshop;
 
+import org.skypro.skyshop.article.Article;
 import org.skypro.skyshop.basket.ProductBasket;
 import org.skypro.skyshop.product.DiscountedProduct;
 import org.skypro.skyshop.product.FixPriceProduct;
 import org.skypro.skyshop.product.Product;
 import org.skypro.skyshop.product.SimpleProduct;
+import org.skypro.skyshop.search.SearchEngine;
+import org.skypro.skyshop.search.Searchable;
 
 public class App {
     public static void main(String[] args) {
+        // Товары для демонстрации корзины
+        Product apple = new SimpleProduct("Яблоко", 50);
+        Product laptop = new DiscountedProduct("Ноутбук", 1000, 20);
+        Product paperclip = new FixPriceProduct("Скрепка");
+
         ProductBasket basket = new ProductBasket();
-
-        // Товары трёх типов
-        basket.addProduct(new SimpleProduct("Яблоко", 50));
-        basket.addProduct(new SimpleProduct("Хлеб", 80));
-        basket.addProduct(new DiscountedProduct("Ноутбук", 1000, 20));   // 1000 - 20% = 800
-        basket.addProduct(new FixPriceProduct("Скрепка"));                // фиксированная цена
-
-        // Печать содержимого
-        System.out.println("Содержимое корзины:");
+        basket.addProduct(apple);
+        basket.addProduct(laptop);
+        basket.addProduct(paperclip);
         basket.printBasket();
 
-        // Стоимость
-        System.out.println("Стоимость корзины: " + basket.getTotalCost());
+        // Статьи
+        Article appleArticle = new Article(
+                "Польза яблок",
+                "Яблоко — один из самых полезных фруктов. В нём много витаминов и клетчатки."
+        );
+        Article laptopArticle = new Article(
+                "Как выбрать ноутбук",
+                "Ноутбук стоит выбирать по процессору, объёму памяти и весу."
+        );
+        Article gardenArticle = new Article(
+                "Садовые хитрости",
+                "Скрепка отлично подходит для подвязки рассады к опоре."
+        );
 
-        // Поиск товара, который есть в корзине
-        System.out.println("Есть ли \"Ноутбук\"? " + basket.containsProductByName("Ноутбук"));
+        // Движок поиска: добавляем все товары и статьи
+        SearchEngine engine = new SearchEngine(10);
+        engine.add(apple);
+        engine.add(laptop);
+        engine.add(paperclip);
+        engine.add(appleArticle);
+        engine.add(laptopArticle);
+        engine.add(gardenArticle);
 
-        // Поиск товара, которого нет в корзине
-        System.out.println("Есть ли \"Ананас\"? " + basket.containsProductByName("Ананас"));
+        // Несколько поисковых запросов
+        System.out.println();
+        printResults(engine, "яблоко");
+        printResults(engine, "ноутбук");
+        printResults(engine, "скрепка");
+        printResults(engine, "ананас");
+    }
 
-        // Очистка и пустая корзина
-        basket.clearBasket();
-        System.out.println("Содержимое после очистки:");
-        basket.printBasket();
-        System.out.println("Стоимость пустой корзины: " + basket.getTotalCost());
-        System.out.println("Есть ли \"Хлеб\" в пустой корзине? " + basket.containsProductByName("Хлеб"));
+    private static void printResults(SearchEngine engine, String query) {
+        System.out.println("Поиск: \"" + query + "\"");
+        Searchable[] results = engine.search(query);
+        boolean found = false;
+        for (Searchable result : results) {
+            if (result != null) {
+                System.out.println("  " + result.getStringRepresentation());
+                found = true;
+            }
+        }
+        if (!found) {
+            System.out.println("  Ничего не найдено");
+        }
+        System.out.println();
     }
 }
